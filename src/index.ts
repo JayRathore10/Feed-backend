@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./database/project3DB";
 import { userRouter } from "./routes/userRoutes";
 import cookieParser from "cookie-parser";
+import { authRouter } from "./routes/authRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -14,6 +15,7 @@ app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
  
 app.use("/user" , userRouter);
+app.use("/auth" , authRouter);
 
 app.listen(PORT , ()=>{
   console.log(`http://localhost:${PORT}`);
