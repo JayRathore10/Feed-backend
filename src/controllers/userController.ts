@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { userModel } from "../models/userModel";
 import { compare, encrypt } from "../middleware/authMiddleware";
 import { AuthRequest } from "../types/customReq";
+import { responseEncoding } from "axios";
+import { postModel } from "../models/postModel";
 
 export const homePage = (req: Request, res: Response) => {
   try {
@@ -109,12 +111,69 @@ export const logoutUser = async (req : Request  , res : Response)=>{
   }
 }
 
-export const profileLogged = (req : AuthRequest , res : Response)=>{
+export const profileLogged = async (req : AuthRequest , res : Response)=>{
   try{
+
+    const user = await userModel.findOne({email : req.user?.email});
+
+    if(!user){
+      return res.status(401).json({
+        messgae : "User not found"
+      })
+    }
+
+    await user.populate("posts");
+
+    const posts = await postModel.findOne({user: user._id})
+
+    if(!posts){
+      return res.status(401).json({
+        message : "Not Found"
+      })
+    }
+
     return res.status(200).json({
       message : "Profile" ,
-      user : req.user
+      user ,
+      posts : user.posts
     })
+  }catch(err){
+    return res.status(500).json({
+      message : err
+    })
+  }
+}
+
+export const loginPage = (req : Request , res : Response)=>{
+  return res.send("hello");
+}
+
+export const makePost = async (req : AuthRequest , res :Response)=>{
+  try{
+    const user = await userModel.findOne({email : req.user?.email});
+
+    const {content} = req.body;
+
+    // not needed checked through isLoginMiddleware
+    if(!user && !content){
+      return res.status(401).json({
+        message : "Something went wrong"
+      })
+    }
+
+    const post = await postModel.create({
+      user : user?._id, 
+      content : content
+    });
+    
+    user?.posts.push(post._id);
+    await user?.save();
+
+    return res.status(200).json({
+      message : "New post created"  , 
+      content 
+    })
+
   }catch(err){
     return res.status(500).json({
       message : err

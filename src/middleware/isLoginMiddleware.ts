@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/customReq";
+import { userPlayload } from "../types/customReq";
 
 export const isLogIn = (req: AuthRequest, res: Response, next: NextFunction) => {
   const token = req.cookies.token ;
@@ -12,7 +13,7 @@ export const isLogIn = (req: AuthRequest, res: Response, next: NextFunction) => 
   }
 
   try{
-    const data = jwt.verify(token , "secure");
+    const data = jwt.verify(token , "secure") as userPlayload;
     req.user = data ;
     next();
   }catch(err){
