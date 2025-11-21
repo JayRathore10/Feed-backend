@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { editPost, giveLike, homePage, loginPage, loginUser, logoutUser, makePost, profileLogged, registerUsers, updatePost } from "../controllers/userController";
+import { editPost, giveLike, homePage, loginPage, makePost, profileLogged,  updatePost } from "../controllers/userController";
 import { isLogIn } from "../middleware/isLoginMiddleware";
 
 export const userRouter = Router();

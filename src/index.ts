@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/authRoutes";
 
 const app = express();
-const PORT = 3000;
+const PORT =  process.env.PORT || 3000;
 
 // connect database 
 connectDB();
